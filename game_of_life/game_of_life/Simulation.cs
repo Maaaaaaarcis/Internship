@@ -9,8 +9,8 @@ namespace game_of_life
     {
         public int IterationCount { get; private set; }
         public int CellCount { get; private set; }
-        private int Rows { get; set; }
-        private int Columns { get; set; }
+        public int Rows { get; private set; }
+        public int Columns { get; private set; }
         private bool[,] Grid { get; set; }
 
         public Simulation(int rows, int cols)
