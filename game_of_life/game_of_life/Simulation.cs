@@ -15,45 +15,17 @@ namespace game_of_life
 
         public Simulation(int rows, int cols)
         {
+            //Assigns appropriate values to simulation properties
             IterationCount = 0;
             CellCount = 0;
             Rows = rows;
             Columns = cols;
-            GenerateRandom();
-        }
 
-        public Simulation(string[] fileGrid)
-        {
-            IterationCount = Int32.Parse(fileGrid[0].Substring(0, fileGrid[0].IndexOf(',')));
-            CellCount = Int32.Parse(fileGrid[0].Substring(fileGrid[0].IndexOf(',') + 1));
-            Rows = Int32.Parse(fileGrid[1].Substring(0, fileGrid[1].IndexOf(',')));
-            Columns = Int32.Parse(fileGrid[1].Substring(fileGrid[1].IndexOf(',') + 1));
-
-            bool[,] grid = new bool[Rows, Columns];
-            for (int x = 0; x < Rows; x++)
-            {
-                for (int y = 0; y < Columns; y++)
-                {
-                    try
-                    {
-                        if (fileGrid[x + 2][y] == '+')
-                        {
-                            grid[x, y] = true;
-                        }
-                        else
-                        {
-                            grid[x, y] = false;
-                        }
-                    }
-                    catch { }
-                }
-            }
-            Grid = grid;
-        }
-
-        private void GenerateRandom()
-        {
+            //Initialises grid of the simulation
             Grid = new bool[Rows, Columns];
+
+            //For each cell in the grid that is not on the border this will assign
+            //a randomised value of either true or false
             for (int x = 1; x < Rows - 1; x++)
             {
                 for (int y = 1; y < Columns - 1; y++)
@@ -72,14 +44,49 @@ namespace game_of_life
             }
         }
 
+        public Simulation(string[] fileGrid)
+        {
+            //Reads first 2 lines that contain property values and assigns them to current simulation
+            IterationCount = Int32.Parse(fileGrid[0].Substring(0, fileGrid[0].IndexOf(',')));
+            CellCount = Int32.Parse(fileGrid[0].Substring(fileGrid[0].IndexOf(',') + 1));
+            Rows = Int32.Parse(fileGrid[1].Substring(0, fileGrid[1].IndexOf(',')));
+            Columns = Int32.Parse(fileGrid[1].Substring(fileGrid[1].IndexOf(',') + 1));
+
+            //Initialises grid of the simulation
+            Grid = new bool[Rows, Columns];
+
+            //Reads file's next lines for cell occupancy
+            for (int x = 0; x < Rows; x++)
+            {
+                for (int y = 0; y < Columns; y++)
+                {
+                    try
+                    {
+                        if (fileGrid[x + 2][y] == '+')
+                        {
+                            Grid[x, y] = true;
+                        }
+                        else
+                        {
+                            Grid[x, y] = false;
+                        }
+                    }
+                    catch { }
+                }
+            }
+        }
+
         public StringBuilder ToStringBuilder()
         {
+            //StringBuilder that will be returned and contains info about simulation
             StringBuilder print = new StringBuilder();
 
+            //First line is information about simulation properties
             print.Append("Current iteration: " + IterationCount +
                 "; Count of live cells: " + CellCount +
                 "; press SPACE to pause, press ESC to stop\n");
 
+            //Next lines in string are a representation of the simulation where '+' are alive cells
             for (int row = 0; row < Rows; row++)
             {
                 for (int col = 0; col < Columns; col++)
@@ -156,11 +163,14 @@ namespace game_of_life
 
         public string[] ToSaveable()
         {
+            //String array that will have information about simulation
             string[] lines = new string[Rows + 2];
 
+            //Writes first 2 lines with information about simulation properties
             lines[0] = IterationCount + "," + CellCount;
             lines[1] = Rows + "," + Columns;
 
+            //Next writes the grid of the simulation to file
             for (int x = 0; x < Rows; x++)
             {
                 for (int y = 0; y < Columns; y++)

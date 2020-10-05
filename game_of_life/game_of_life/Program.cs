@@ -19,6 +19,8 @@ namespace game_of_life
 
                 if (load == "Y")
                 {
+                    //If user wishes to load from file: asks name of file and initialises it with
+                    //simulation's constructor
                     Console.WriteLine("Please enter the name of the file! (without .txt)");
                     string fileName = Console.ReadLine();
 
@@ -28,11 +30,14 @@ namespace game_of_life
                 }
                 else
                 {
-                    int rows = 3;
-                    int cols = 3;
-                    string cont = "";
+                    //If user does not want to load from file:
+                    //asks user values for rows and cols and initialises simulation
+                    int rows;
+                    int cols;
+                    string cont;
                     do
                     {
+                        //If user enters a non-number or number below 3, then will set default values to rows and cols
                         Console.WriteLine("\nPlease enter the amount of rows for simulation!");
                         try
                         {
@@ -59,6 +64,7 @@ namespace game_of_life
                             cols = 60;
                         }
 
+                        //Asks user if inputs are correct, if user decides they aren't then they can reinput them
                         Console.WriteLine("\nAre these inputs correct?\n" +
                             "Rows: " + rows + "\nColumns: " + cols +
                             "\nEnter \"Y\" to continue, or enter anything else to go back and change inputs!");
@@ -66,15 +72,20 @@ namespace game_of_life
                         Console.Clear();
                     } while (cont != "Y");
 
+                    //Adds 2 to rows and cols since borders can't be used
                     rows += 2;
                     cols += 2;
+
+                    //Initialises simulation with its constructor
                     simulation = new Simulation(rows, cols);
                 }
 
+                //Hides cursor and presents a message to user before starting simulation
+                Console.CursorVisible = false;
                 Console.WriteLine("Press any key to continue!");
                 Console.ReadKey();
-                Console.CursorVisible = false;
 
+                //Writes first iteration to screen
                 Console.Clear();
                 Console.Write(simulation.ToStringBuilder());
 
@@ -83,13 +94,17 @@ namespace game_of_life
                     Thread.Sleep(1000);
                     if (!Console.KeyAvailable)
                     {
+                        //If a key is not pressed, procceeds to next iteration and prints it
                         simulation.NextIteration();
                         Console.Clear();
                         Console.Write(simulation.ToStringBuilder());
                     }
                     else
                     {
+                        //If a key is pressed, checks what that key is
                         ConsoleKeyInfo key = Console.ReadKey(false);
+
+                        //If it is spacebar, starts a do{} cycle to act as a pause
                         if (key.Key == ConsoleKey.Spacebar)
                         {
                             do
@@ -100,12 +115,15 @@ namespace game_of_life
                                 key = Console.ReadKey(false);
                                 if (key.Key == ConsoleKey.Escape)
                                 {
+                                    //If Escape key is pressed during the pause, exits the game's loop
                                     Console.CursorTop = simulation.Rows + 2;
                                     Console.CursorLeft = 0;
                                     break;
                                 }
                             } while (key.Key != ConsoleKey.Spacebar);
                         }
+
+                        //If Escape key is pressed, exits the game's loop
                         if (key.Key == ConsoleKey.Escape)
                         {
                             break;
@@ -113,18 +131,24 @@ namespace game_of_life
                     }
                 }
 
+                //Asks user if they want to save current simulation to file
                 Console.CursorVisible = true;
                 Console.WriteLine("WWould you like to save information to a file? (Y-yes)");
                 string choice = Console.ReadLine();
                 if (choice == "Y")
                 {
+                    //Creates string array from Simulation class
                     string[] gridInfo = simulation.ToSaveable();
 
+                    //Asks for file name that information will be saved to
                     Console.WriteLine("Please enter a name for this file!");
                     string fileName = Console.ReadLine();
+
+                    //Saves information about simulation from prior string array to requested file name
                     System.IO.File.WriteAllLines(@"./" + fileName + ".txt", gridInfo);
                 }
 
+                //Asks user if they want to restart the program, if they don't then exits the program loop
                 Console.WriteLine("Would you like to restart the program? (Y-yes)");
                 choice = Console.ReadLine();
                 if (choice != "Y")
@@ -132,6 +156,8 @@ namespace game_of_life
                     break;
                 }
             } while (true);
+
+            //Final message before exiting program
             Console.WriteLine("\nPress any key to exit program!");
             Console.CursorVisible = false;
             Console.ReadKey();
