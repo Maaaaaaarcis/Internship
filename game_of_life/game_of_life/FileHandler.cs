@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
-using System.Text.Json;
+﻿using System.Text.Json;
 using System.Text.Json.Serialization;
 
 namespace GameOfLife
@@ -12,7 +8,7 @@ namespace GameOfLife
     /// </summary>
     public class FileHandler
     {
-        private string FileName { get; set; }
+        private string FileName;
 
         /// <summary>
         /// Handles saving to and loading from a file for the game
@@ -24,19 +20,20 @@ namespace GameOfLife
         }
 
         /// <summary>
-        /// Saves information about simulation to file
+        /// Saves information about game to file
         /// </summary>
-        public void Save(string json)
+        /// <param name="simulations">Array of simulations to save</param>
+        public void Save(Simulation[] simulations)
         {
-            System.IO.File.WriteAllText(FileName, json);
+            System.IO.File.WriteAllText(FileName, JsonSerializer.Serialize(simulations));
         }
 
         /// <summary>
-        /// Loads information about simulation from file and returns it as a JSON document
+        /// Loads information about simulation from file and returns it as a string representing the JSON structure
         /// </summary>
-        public string Load()
+        public Simulation[] Load()
         {
-            return System.IO.File.ReadAllText(FileName);
+            return JsonSerializer.Deserialize<Simulation[]>(System.IO.File.ReadAllText(FileName));
         }
     }
 }

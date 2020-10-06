@@ -1,6 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Runtime.CompilerServices;
+using System.Reflection.PortableExecutable;
 using System.Text;
 using System.Text.Json;
 
@@ -12,29 +11,34 @@ namespace GameOfLife
     public class Simulation
     {
         /// <summary>
-        /// Gets on which iteration the simulation is on
+        /// Count of iterations the simulations has gone through
         /// </summary>
         public int IterationCount { get; set; }
 
         /// <summary>
-        /// Gets count of cells in simulation that are alive
+        /// Count of cells in simulation that are alive
         /// </summary>
         public int CellCount { get; set; }
 
         /// <summary>
-        /// Gets amount of rows in simulation's grid
+        /// Amount of rows in simulation's grid
         /// </summary>
         public int Rows { get; set; }
 
         /// <summary>
-        /// Gets amount of columns in simulation's grid
+        /// Amount of columns in simulation's grid
         /// </summary>
         public int Columns { get; set; }
 
         /// <summary>
-        /// Gets bool array of simulation's grid
+        /// Bool array of simulation's grid
         /// </summary>
         public bool[][] Grid { get; set; }
+
+        /// <summary>
+        /// Bool that shows if simulation is active
+        /// </summary>
+        public bool IsActive { get; set; }
 
         /// <summary>
         /// Class that contains logic for the simulation and its proccesses
@@ -56,21 +60,32 @@ namespace GameOfLife
             CellCount = 0;
             Rows = rows;
             Columns = cols;
+            IsActive = true;
 
+            //Initialises grid and populates it with cells at random
+            Initialise();
+            RandomizeGrid();
+        }
+
+        private void Initialise()
+        {
             //Initialises grid of the simulation
             Grid = new bool[Rows][];
             for (int i = 0; i < Rows; i++)
             {
                 Grid[i] = new bool[Columns];
             }
+        }
 
+        private void RandomizeGrid()
+        {
             //For each cell in the grid that is not on the border this will assign
             //a randomised value of either true or false
+            Random rand = new Random();
             for (int x = 1; x < Rows - 1; x++)
             {
                 for (int y = 1; y < Columns - 1; y++)
                 {
-                    Random rand = new Random();
                     if (rand.Next(2) > 0)
                     {
                         Grid[x][y] = true;
@@ -82,54 +97,6 @@ namespace GameOfLife
                     }
                 }
             }
-        }
-
-        /// <summary>
-        /// Class that contains logic for the simulation and its proccesses
-        /// </summary>
-        /// <param name="json">JSON string that is being loaded</param>
-        public Simulation(string json)
-        {
-            Simulation sim = JsonSerializer.Deserialize<Simulation>(json);
-            IterationCount = sim.IterationCount;
-            CellCount = sim.CellCount;
-            Rows = sim.Rows;
-            Columns = sim.Columns;
-            Grid = sim.Grid;
-        }
-
-        /// <summary>
-        /// Cnverts information of the simulation into a stringbuilder so that it can be printed on screen
-        /// </summary>
-        /// <returns></returns>
-        public StringBuilder ToStringBuilder()
-        {
-            //StringBuilder that will be returned and contains info about simulation
-            StringBuilder print = new StringBuilder();
-
-            //First line is information about simulation properties
-            print.Append("Current iteration: " + IterationCount +
-                "; Count of live cells: " + CellCount +
-                "; press SPACE to pause, press ESC to stop\n");
-
-            //Next lines in string are a representation of the simulation where '+' are alive cells
-            for (int row = 0; row < Rows; row++)
-            {
-                for (int col = 0; col < Columns; col++)
-                {
-                    if (Grid[row][col])
-                    {
-                        print.Append('+');
-                    }
-                    else
-                    {
-                        print.Append(' ');
-                    }
-                }
-                print.Append('\n');
-            }
-
-            return print;
         }
 
         /// <summary>
@@ -147,46 +114,7 @@ namespace GameOfLife
             {
                 for (int y = 1; y < Columns - 1; y++)
                 {
-                    //Find count of neigbhors for current cell
-                    int neighborsCount = -1;
-                    for (int i = -1; i < 2; i++)
-                    {
-                        for (int j = -1; j < 2; j++)
-                        {
-                            if (Grid[x + i][y + j])
-                            {
-                                neighborsCount++;
-                            }
-                        }
-                    }
-
-                    //Checks if cell is alive
-                    if (Grid[x][y])
-                    {
-                        //Checks alive cell if it is underpopulated or overpopulated, kills it if it is
-                        if (neighborsCount < 2 || neighborsCount > 3)
-                        {
-                            nextGrid[x][y] = false;
-                            CellCount--;
-                        }
-                        else
-                        {
-                            nextGrid[x][y] = true;
-                        }
-                    }
-                    else
-                    {
-                        //Checks dead cell if it can be reproduced, does so if it can
-                        if (neighborsCount > 2)
-                        {
-                            nextGrid[x][y] = true;
-                            CellCount++;
-                        }
-                        else
-                        {
-                            nextGrid[x][y] = false;
-                        }
-                    }
+                    nextGrid[x][y] = DoCellAction(x, y);
                 }
             }
 
@@ -194,14 +122,54 @@ namespace GameOfLife
             IterationCount++;
         }
 
-        /// <summary>
-        /// Returns simulation as a JSON document for saving
-        /// </summary>
-        /// <returns></returns>
-        public string ToSaveable()
+        private int CheckNeighborCount(int x, int y)
         {
-            string json = JsonSerializer.Serialize(this);
-            return json;
+            int neighborsCount = -1;
+            for (int i = -1; i < 2; i++)
+            {
+                for (int j = -1; j < 2; j++)
+                {
+                    if (Grid[x + i][y + j])
+                    {
+                        neighborsCount++;
+                    }
+                }
+            }
+            return neighborsCount;
+        }
+
+        private bool DoCellAction(int x, int y)
+        {
+            //Find count of neigbhors for current cell
+            int neighborsCount = CheckNeighborCount(x, y);
+
+            //Checks if cell is alive
+            if (Grid[x][y])
+            {
+                //Checks alive cell if it is underpopulated or overpopulated, kills it if it is
+                if (neighborsCount < 2 || neighborsCount > 3)
+                {
+                    CellCount--;
+                    return false;
+                }
+                else
+                {
+                    return true;
+                }
+            }
+            else
+            {
+                //Checks dead cell if it can be reproduced, does so if it can
+                if (neighborsCount > 2)
+                {
+                    CellCount++;
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
         }
     }
 }
