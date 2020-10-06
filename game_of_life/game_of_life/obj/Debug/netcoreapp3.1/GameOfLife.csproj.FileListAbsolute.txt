@@ -1,0 +1,13 @@
+C:\Users\marcis.gulbis\source\repos\Maaaaaaarcis\Internship\game_of_life\game_of_life\bin\Debug\netcoreapp3.1\GameOfLife.exe
+C:\Users\marcis.gulbis\source\repos\Maaaaaaarcis\Internship\game_of_life\game_of_life\bin\Debug\netcoreapp3.1\GameOfLife.deps.json
+C:\Users\marcis.gulbis\source\repos\Maaaaaaarcis\Internship\game_of_life\game_of_life\bin\Debug\netcoreapp3.1\GameOfLife.runtimeconfig.json
+C:\Users\marcis.gulbis\source\repos\Maaaaaaarcis\Internship\game_of_life\game_of_life\bin\Debug\netcoreapp3.1\GameOfLife.runtimeconfig.dev.json
+C:\Users\marcis.gulbis\source\repos\Maaaaaaarcis\Internship\game_of_life\game_of_life\bin\Debug\netcoreapp3.1\GameOfLife.dll
+C:\Users\marcis.gulbis\source\repos\Maaaaaaarcis\Internship\game_of_life\game_of_life\bin\Debug\netcoreapp3.1\GameOfLife.pdb
+C:\Users\marcis.gulbis\source\repos\Maaaaaaarcis\Internship\game_of_life\game_of_life\obj\Debug\netcoreapp3.1\GameOfLife.csprojAssemblyReference.cache
+C:\Users\marcis.gulbis\source\repos\Maaaaaaarcis\Internship\game_of_life\game_of_life\obj\Debug\netcoreapp3.1\GameOfLife.AssemblyInfoInputs.cache
+C:\Users\marcis.gulbis\source\repos\Maaaaaaarcis\Internship\game_of_life\game_of_life\obj\Debug\netcoreapp3.1\GameOfLife.AssemblyInfo.cs
+C:\Users\marcis.gulbis\source\repos\Maaaaaaarcis\Internship\game_of_life\game_of_life\obj\Debug\netcoreapp3.1\GameOfLife.csproj.CoreCompileInputs.cache
+C:\Users\marcis.gulbis\source\repos\Maaaaaaarcis\Internship\game_of_life\game_of_life\obj\Debug\netcoreapp3.1\GameOfLife.dll
+C:\Users\marcis.gulbis\source\repos\Maaaaaaarcis\Internship\game_of_life\game_of_life\obj\Debug\netcoreapp3.1\GameOfLife.pdb
+C:\Users\marcis.gulbis\source\repos\Maaaaaaarcis\Internship\game_of_life\game_of_life\obj\Debug\netcoreapp3.1\GameOfLife.genruntimeconfig.cache

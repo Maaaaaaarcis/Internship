@@ -2,21 +2,57 @@
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Text;
+using System.Text.Json;
 
-namespace game_of_life
+namespace GameOfLife
 {
-    class Simulation
+    /// <summary>
+    /// Class that contains logic for the simulation and its proccesses
+    /// </summary>
+    public class Simulation
     {
-        public int IterationCount { get; private set; }
-        public int CellCount { get; private set; }
-        public int Rows { get; private set; }
-        public int Columns { get; private set; }
-        private bool[,] Grid { get; set; }
+        /// <summary>
+        /// Gets on which iteration the simulation is on
+        /// </summary>
+        public int IterationCount { get; set; }
 
+        /// <summary>
+        /// Gets count of cells in simulation that are alive
+        /// </summary>
+        public int CellCount { get; set; }
+
+        /// <summary>
+        /// Gets amount of rows in simulation's grid
+        /// </summary>
+        public int Rows { get; set; }
+
+        /// <summary>
+        /// Gets amount of columns in simulation's grid
+        /// </summary>
+        public int Columns { get; set; }
+
+        /// <summary>
+        /// Gets bool array of simulation's grid
+        /// </summary>
+        public bool[,] Grid { get; set; }
+
+        /// <summary>
+        /// Class that contains logic for the simulation and its proccesses
+        /// </summary>
+        public Simulation()
+        {
+
+        }
+
+        /// <summary>
+        /// Class that contains logic for the simulation and its proccesses
+        /// </summary>
+        /// <param name="rows">Amount of rows in grid</param>
+        /// <param name="cols">Amount of columns in grid</param>
         public Simulation(int rows, int cols)
         {
             //Assigns appropriate values to simulation properties
-            IterationCount = 0;
+            IterationCount = 1;
             CellCount = 0;
             Rows = rows;
             Columns = cols;
@@ -44,38 +80,24 @@ namespace game_of_life
             }
         }
 
-        public Simulation(string[] fileGrid)
+        /// <summary>
+        /// Class that contains logic for the simulation and its proccesses
+        /// </summary>
+        /// <param name="json">JSON string that is being loaded</param>
+        public Simulation(string json)
         {
-            //Reads first 2 lines that contain property values and assigns them to current simulation
-            IterationCount = Int32.Parse(fileGrid[0].Substring(0, fileGrid[0].IndexOf(',')));
-            CellCount = Int32.Parse(fileGrid[0].Substring(fileGrid[0].IndexOf(',') + 1));
-            Rows = Int32.Parse(fileGrid[1].Substring(0, fileGrid[1].IndexOf(',')));
-            Columns = Int32.Parse(fileGrid[1].Substring(fileGrid[1].IndexOf(',') + 1));
-
-            //Initialises grid of the simulation
-            Grid = new bool[Rows, Columns];
-
-            //Reads file's next lines for cell occupancy
-            for (int x = 0; x < Rows; x++)
-            {
-                for (int y = 0; y < Columns; y++)
-                {
-                    try
-                    {
-                        if (fileGrid[x + 2][y] == '+')
-                        {
-                            Grid[x, y] = true;
-                        }
-                        else
-                        {
-                            Grid[x, y] = false;
-                        }
-                    }
-                    catch { }
-                }
-            }
+            Simulation sim = JsonSerializer.Deserialize<Simulation>(json);
+            IterationCount = sim.IterationCount;
+            CellCount = sim.CellCount;
+            Rows = sim.Rows;
+            Columns = sim.Columns;
+            Grid = sim.Grid;
         }
 
+        /// <summary>
+        /// Cnverts information of the simulation into a stringbuilder so that it can be printed on screen
+        /// </summary>
+        /// <returns></returns>
         public StringBuilder ToStringBuilder()
         {
             //StringBuilder that will be returned and contains info about simulation
@@ -106,6 +128,9 @@ namespace game_of_life
             return print;
         }
 
+        /// <summary>
+        /// Advances simulation to next iteration acording to the rules of the Game of Life
+        /// </summary>
         public void NextIteration()
         {
             bool[,] nextGrid = new bool[Rows, Columns];
@@ -161,32 +186,14 @@ namespace game_of_life
             Grid = nextGrid;
         }
 
-        public string[] ToSaveable()
+        /// <summary>
+        /// Returns simulation as a JSON document for saving
+        /// </summary>
+        /// <returns></returns>
+        public string ToSaveable()
         {
-            //String array that will have information about simulation
-            string[] lines = new string[Rows + 2];
-
-            //Writes first 2 lines with information about simulation properties
-            lines[0] = IterationCount + "," + CellCount;
-            lines[1] = Rows + "," + Columns;
-
-            //Next writes the grid of the simulation to file
-            for (int x = 0; x < Rows; x++)
-            {
-                for (int y = 0; y < Columns; y++)
-                {
-                    if (Grid[x, y])
-                    {
-                        lines[x + 2] += '+';
-                    }
-                    else
-                    {
-                        lines[x + 2] += ' ';
-                    }
-                }
-            }
-
-            return lines;
+            string json = JsonSerializer.Serialize(this);
+            return json;
         }
     }
 }

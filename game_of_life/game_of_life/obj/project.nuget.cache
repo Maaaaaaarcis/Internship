@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "Nv0RDBG9+CGi2U7Ao94ZAnzjf1adbnkwtv/R2zhioVdkdKWQtztDkHRu2AwWE55SMrRWlJl5IoAYCD7/KV1Dnw==",
+  "dgSpecHash": "J8vhM9X2CSpihY1yH6hV16/WIqBSz9cZX73llH9oqS3vUhJM4uNhad1yxhOiV5JKluqoUepFhxIl4h6hsMGr+w==",
   "success": true,
-  "projectFilePath": "C:\\Users\\marcis.gulbis\\Source\\Repos\\Maaaaaaarcis\\Internship\\game_of_life\\game_of_life\\game_of_life.csproj",
+  "projectFilePath": "C:\\Users\\marcis.gulbis\\source\\repos\\Maaaaaaarcis\\Internship\\game_of_life\\game_of_life\\GameOfLife.csproj",
   "expectedPackageFiles": [],
   "logs": []
 }

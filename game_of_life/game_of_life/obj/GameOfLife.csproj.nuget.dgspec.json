@@ -1,15 +1,15 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\marcis.gulbis\\source\\repos\\Maaaaaaarcis\\Internship\\game_of_life\\game_of_life\\game_of_life.csproj": {}
+    "C:\\Users\\marcis.gulbis\\source\\repos\\Maaaaaaarcis\\Internship\\game_of_life\\game_of_life\\GameOfLife.csproj": {}
   },
   "projects": {
-    "C:\\Users\\marcis.gulbis\\source\\repos\\Maaaaaaarcis\\Internship\\game_of_life\\game_of_life\\game_of_life.csproj": {
+    "C:\\Users\\marcis.gulbis\\source\\repos\\Maaaaaaarcis\\Internship\\game_of_life\\game_of_life\\GameOfLife.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\marcis.gulbis\\source\\repos\\Maaaaaaarcis\\Internship\\game_of_life\\game_of_life\\game_of_life.csproj",
-        "projectName": "game_of_life",
-        "projectPath": "C:\\Users\\marcis.gulbis\\source\\repos\\Maaaaaaarcis\\Internship\\game_of_life\\game_of_life\\game_of_life.csproj",
+        "projectUniqueName": "C:\\Users\\marcis.gulbis\\source\\repos\\Maaaaaaarcis\\Internship\\game_of_life\\game_of_life\\GameOfLife.csproj",
+        "projectName": "GameOfLife",
+        "projectPath": "C:\\Users\\marcis.gulbis\\source\\repos\\Maaaaaaarcis\\Internship\\game_of_life\\game_of_life\\GameOfLife.csproj",
         "packagesPath": "C:\\Users\\marcis.gulbis\\.nuget\\packages\\",
         "outputPath": "C:\\Users\\marcis.gulbis\\source\\repos\\Maaaaaaarcis\\Internship\\game_of_life\\game_of_life\\obj\\",
         "projectStyle": "PackageReference",
