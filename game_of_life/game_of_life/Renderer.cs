@@ -121,27 +121,18 @@ namespace GameOfLife
         }
 
         /// <summary>
-        /// Check Console if user is clicking the designated key
+        /// Checks to see what, if any, button is pressed by the user
         /// </summary>
-        /// <param name="compareKey">Key that is being checked for being pressed</param>
-        /// <returns>Returns true if key is pressed, false if key isn't pressed or if no key is pressed</returns>
-        public bool KeyIsPressed(ConsoleKey compareKey)
+        /// <returns>Integer representation of pressed key, or -1 if no key pressed</returns>
+        public int CheckKeyPress()
         {
             if (Console.KeyAvailable)
             {
-                ConsoleKeyInfo pressedKey = Console.ReadKey(true);
-                if (pressedKey.Key == compareKey)
-                {
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
+                return (int)Console.ReadKey(true).Key;
             }
             else
             {
-                return false;
+                return -1;
             }
         }
 

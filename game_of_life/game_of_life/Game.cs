@@ -106,28 +106,30 @@ namespace GameOfLife
 
             while (true)
             {
-                if (Render.KeyIsPressed(ConsoleKey.Spacebar))
+                switch (Render.CheckKeyPress())
                 {
-                    Render.IsPaused = timer.Enabled;
-                    timer.Enabled = !timer.Enabled;
-                    if (!timer.Enabled)
-                    {
-                        PrintSimulations();
-                    }
-                }
-
-                if (!timer.Enabled && Render.KeyIsPressed(ConsoleKey.Enter))
-                {
-                    RenderList = Render.AskRenderList(SimulationCount);
-                    PrintSimulations();
-                }
-
-                if (Render.KeyIsPressed(ConsoleKey.Escape))
-                {
-                    timer.Stop();
-                    Render.IsPaused = false;
-                    Render.PrintSimulationMenu(LiveGames, SimulationCount, TotalAliveCells);
-                    break;
+                    case 32:
+                        Render.IsPaused = timer.Enabled;
+                        timer.Enabled = !timer.Enabled;
+                        if (!timer.Enabled)
+                        {
+                            PrintSimulations();
+                        }
+                        break;
+                    case 13:
+                        if (!timer.Enabled)
+                        {
+                            RenderList = Render.AskRenderList(SimulationCount);
+                            PrintSimulations();
+                        }
+                        break;
+                    case 27:
+                        timer.Stop();
+                        Render.IsPaused = false;
+                        Render.PrintSimulationMenu(LiveGames, SimulationCount, TotalAliveCells);
+                        return;
+                    default:
+                        break;
                 }
             }
         }
