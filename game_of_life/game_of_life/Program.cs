@@ -8,7 +8,7 @@
             do
             {
                 Game game = new Game();
-                restart = game.Start();
+                restart = game.Play();
             } while (restart);
         }
     }

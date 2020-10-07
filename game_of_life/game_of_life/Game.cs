@@ -35,52 +35,9 @@ namespace GameOfLife
         /// <summary>
         /// Starts the Game of Life, returns true if the user wants to play again
         /// </summary>
-        public bool Start()
+        public bool Play()
         {
-            Render.PrintStartMessage();
-
-            string loadedFile = Render.AskLoad();
-            if (loadedFile != null)
-            {
-                FileHandler = new FileHandler(loadedFile);
-                Simulations = FileHandler.Load();
-            }
-            else
-            {
-                int rows, cols;
-                Render.AskSimulationInitialisation(out rows, out cols, out SimulationCount);
-
-                //Adds 2 to rows and cols since borders can't be used
-                rows += 2;
-                cols += 2;
-
-                LiveGames = SimulationCount;
-
-                //Sets first 8 simulations to be rendered if less than 8 total
-                if (SimulationCount < 8)
-                {
-                    for (int i = 0; i < 8; i++)
-                    {
-                        if (i < SimulationCount)
-                        {
-                            RenderList[i] = i;
-                        }
-                        else
-                        {
-                            RenderList[i] = -1;
-                        }
-                    }
-                }                
-
-                //Initialises simulations with its constructor, counts total cells
-                Simulations = new Simulation[SimulationCount];
-                for (int i = 0; i < SimulationCount; i++)
-                {
-                    Simulations[i] = new Simulation(rows, cols);
-                    TotalAliveCells += Simulations[i].CellCount;
-                }
-            }
-
+            InitialiseGame();
             DoLoop();
 
             string fileName = Render.AskSave();
@@ -93,65 +50,104 @@ namespace GameOfLife
             return Render.AskExit();
         }
 
-        private void InitialiseSimulations()
+        private void InitialiseGame()
         {
+            Render.PrintStartMessage();
 
+            string loadedFile = Render.AskLoad();
+            if (loadedFile != null)
+            {
+                FileHandler = new FileHandler(loadedFile);
+                Simulations = FileHandler.Load();
+                InitialiseGame(Simulations);
+                RenderList = Render.AskRenderList(Simulations.Length);
+            }
+            else
+            {
+                int rows, cols;
+                Render.AskSimulationInitialisation(out rows, out cols, out SimulationCount);
+
+                //Adds 2 to rows and cols since borders can't be used
+                rows += 2;
+                cols += 2;
+
+                RenderList = Render.AskRenderList(SimulationCount);
+
+                InitialiseGame(rows, cols);
+            }
+            LiveGames = SimulationCount;
+        }
+
+        private void InitialiseGame(int rows, int cols)
+        {
+            //Initialises simulations with its constructor, counts total cells
+            Simulations = new Simulation[SimulationCount];
+            for (int i = 0; i < SimulationCount; i++)
+            {
+                Simulations[i] = new Simulation(rows, cols);
+                TotalAliveCells += Simulations[i].CellCount;
+            }
+        }
+
+        private void InitialiseGame(Simulation[] simulations)
+        {
+            SimulationCount = simulations.Length;
+            foreach (Simulation simulation in simulations)
+            {
+                TotalAliveCells += simulation.CellCount;
+            }
         }
 
         private void DoLoop()
         {
-            //Hides cursor and presents a message to user before starting simulation
-            Console.CursorVisible = false;
-            Console.WriteLine("Press any key to continue!");
-            Console.ReadKey();
-
             //Writes first iteration to screen and starts timer
             PrintSimulations();
             timer.Start();
 
             while (true)
             {
-                if (Console.KeyAvailable)
+                if (Render.KeyIsPressed(ConsoleKey.Spacebar))
                 {
-                    //If a key is pressed, checks what that key is
-                    ConsoleKeyInfo key = Console.ReadKey(false);
-
-                    //If it is spacebar, toggles the timer
-                    if (key.Key == ConsoleKey.Spacebar)
+                    Render.IsPaused = timer.Enabled;
+                    timer.Enabled = !timer.Enabled;
+                    if (!timer.Enabled)
                     {
-                        timer.Enabled = !timer.Enabled;
-                        if (!timer.Enabled)
-                        {
-                            Render.IsPaused = !timer.Enabled;
-                            PrintSimulations();
-                        }
+                        PrintSimulations();
                     }
+                }
 
-                    //If Escape key is pressed, exits the game's loop
-                    if (key.Key == ConsoleKey.Escape)
-                    {
-                        timer.Stop();
-                        Console.Clear();
-                        Render.StartPrintSimulations(LiveGames, SimulationCount, TotalAliveCells);
-                        break;
-                    }
+                if (!timer.Enabled && Render.KeyIsPressed(ConsoleKey.Enter))
+                {
+                    RenderList = Render.AskRenderList(SimulationCount);
+                    PrintSimulations();
+                }
+
+                if (Render.KeyIsPressed(ConsoleKey.Escape))
+                {
+                    timer.Stop();
+                    Render.IsPaused = false;
+                    Render.PrintSimulationMenu(LiveGames, SimulationCount, TotalAliveCells);
+                    break;
                 }
             }
         }
 
         private void AdvanceIteration(Object source, ElapsedEventArgs e)
         {
+            int oldCellCount;
             foreach (var simulation in Simulations)
             {
                 if (simulation.IsActive)
                 {
                     LiveGames--;
                     TotalAliveCells -= simulation.CellCount;
+                    oldCellCount = simulation.CellCount;
+                    
                     simulation.NextIteration();
-                    if (simulation.CellCount > 0)
+                    TotalAliveCells += simulation.CellCount;
+                    if (simulation.CellCount > 0 && simulation.CellCount != oldCellCount)
                     {
                         LiveGames++;
-                        TotalAliveCells += simulation.CellCount;
                     }
                     else
                     {
@@ -164,9 +160,8 @@ namespace GameOfLife
 
         private void PrintSimulations()
         {
-            Console.Clear();
-            Render.StartPrintSimulations(LiveGames, SimulationCount ,TotalAliveCells);
-            for (int i = 0; i < 8 || i < RenderList.Length; i++)
+            Render.PrintSimulationMenu(LiveGames, SimulationCount ,TotalAliveCells);
+            for (int i = 0; i < RenderList.Length; i++)
             {
                 Render.PrintSimulation(Simulations[RenderList[i]]);
             }
