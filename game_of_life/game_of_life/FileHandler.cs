@@ -1,5 +1,4 @@
 ﻿using System.Text.Json;
-using System.Text.Json.Serialization;
 
 namespace GameOfLife
 {
@@ -13,8 +12,25 @@ namespace GameOfLife
         /// <summary>
         /// Handles saving to and loading from a file for the game
         /// </summary>
+        public FileHandler()
+        {
+
+        }
+
+        /// <summary>
+        /// Handles saving to and loading from a file for the game
+        /// </summary>
         /// <param name="fileName">Name of the file to be used</param>
         public FileHandler(string fileName)
+        {
+            SetFileName(fileName);
+        }
+
+        /// <summary>
+        /// Sets the name of the file that is to be handled
+        /// </summary>
+        /// <param name="fileName">Name of th file to be use</param>
+        public void SetFileName(string fileName)
         {
             FileName = @"./" + fileName + ".txt";
         }

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Text.Json;
 using System.Timers;
 
 namespace GameOfLife
@@ -30,36 +29,41 @@ namespace GameOfLife
             LiveGames = 0;
             TotalAliveCells = 0;
             Render = new Renderer();
+            FileHandler = new FileHandler();
         }
 
         /// <summary>
-        /// Starts the Game of Life, returns true if the user wants to play again
+        /// Starts the Game of Life
         /// </summary>
+        /// <returns>True if wants to play again, false if doesn't</returns>
         public bool Play()
         {
-            InitialiseGame();
+            Initialise();
             DoLoop();
 
             string fileName = Render.AskSave();
             if (fileName != null)
             {
-                FileHandler = new FileHandler(fileName);
+                FileHandler.SetFileName(fileName);
                 FileHandler.Save(Simulations);
             }
 
             return Render.AskExit();
         }
 
-        private void InitialiseGame()
+        /// <summary>
+        /// Initialise game depending on user's choice of loading file or not
+        /// </summary>
+        private void Initialise()
         {
             Render.PrintStartMessage();
 
             string loadedFile = Render.AskLoad();
             if (loadedFile != null)
             {
-                FileHandler = new FileHandler(loadedFile);
+                FileHandler.SetFileName(loadedFile);
                 Simulations = FileHandler.Load();
-                InitialiseGame(Simulations);
+                InitialiseSimulations(Simulations);
                 RenderList = Render.AskRenderList(Simulations.Length);
             }
             else
@@ -73,12 +77,18 @@ namespace GameOfLife
 
                 RenderList = Render.AskRenderList(SimulationCount);
 
-                InitialiseGame(rows, cols);
+                InitialiseSimulations(rows, cols);
             }
+
             LiveGames = SimulationCount;
         }
 
-        private void InitialiseGame(int rows, int cols)
+        /// <summary>
+        /// Initialise game with new simulations
+        /// </summary>
+        /// <param name="rows">Amount of rows for new simulations</param>
+        /// <param name="cols">Amount of columns for new simulations</param>
+        private void InitialiseSimulations(int rows, int cols)
         {
             //Initialises simulations with its constructor, counts total cells
             Simulations = new Simulation[SimulationCount];
@@ -89,7 +99,11 @@ namespace GameOfLife
             }
         }
 
-        private void InitialiseGame(Simulation[] simulations)
+        /// <summary>
+        /// Initialise game with simulations from file
+        /// </summary>
+        /// <param name="simulations">Simulations from file that game will be initialised with</param>
+        private void InitialiseSimulations(Simulation[] simulations)
         {
             SimulationCount = simulations.Length;
             foreach (Simulation simulation in simulations)
@@ -98,6 +112,9 @@ namespace GameOfLife
             }
         }
 
+        /// <summary>
+        /// Starts timer for iteration advancement and listens for user key presses for pausing, stopping and opening render list
+        /// </summary>
         private void DoLoop()
         {
             //Writes first iteration to screen and starts timer
@@ -134,20 +151,23 @@ namespace GameOfLife
             }
         }
 
+        /// <summary>
+        /// Advances iteration for all simulations that are active
+        /// </summary>
+        /// <param name="source">Source object passed from timer event</param>
+        /// <param name="e">Event arguments passed from timer event</param>
         private void AdvanceIteration(Object source, ElapsedEventArgs e)
         {
-            int oldCellCount;
             foreach (var simulation in Simulations)
             {
                 if (simulation.IsActive)
                 {
                     LiveGames--;
                     TotalAliveCells -= simulation.CellCount;
-                    oldCellCount = simulation.CellCount;
                     
                     simulation.NextIteration();
                     TotalAliveCells += simulation.CellCount;
-                    if (simulation.CellCount > 0 && simulation.CellCount != oldCellCount)
+                    if (simulation.CellCount > 0)
                     {
                         LiveGames++;
                     }
@@ -157,15 +177,19 @@ namespace GameOfLife
                     }
                 }
             }
+
             PrintSimulations();
         }
 
+        /// <summary>
+        /// Calls renderer to print menu and simulations in render list
+        /// </summary>
         private void PrintSimulations()
         {
             Render.PrintSimulationMenu(LiveGames, SimulationCount ,TotalAliveCells);
             for (int i = 0; i < RenderList.Length; i++)
             {
-                Render.PrintSimulation(Simulations[RenderList[i]]);
+                Render.PrintSimulation(Simulations[RenderList[i]], RenderList[i]);
             }
         }
     }

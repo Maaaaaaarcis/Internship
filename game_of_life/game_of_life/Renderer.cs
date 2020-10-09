@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
+using System.Text;
 
 namespace GameOfLife
 {
@@ -9,6 +9,9 @@ namespace GameOfLife
     /// </summary>
     public class Renderer
     {
+        /// <summary>
+        /// Bool that determines wether to print pause menu or not
+        /// </summary>
         public bool IsPaused { get; set; }
 
         /// <summary>
@@ -56,11 +59,17 @@ namespace GameOfLife
             } while (repeat != 'y');
         }
 
+        /// <summary>
+        /// Ask user for input
+        /// </summary>
+        /// <param name="inputName">Name of input asked</param>
+        /// <param name="defaultValue">Default value of input that is to be used in case of a failed parse or input under 1</param>
+        /// <returns>Value obtained from user</returns>
         private int Input(string inputName, int defaultValue)
         {
             int value = defaultValue;
             Console.WriteLine("Please enter the amount of " + inputName + "!");
-            if (!Int32.TryParse(Console.ReadLine(), out value))
+            if (!Int32.TryParse(Console.ReadLine(), out value) || value < 1)
             {
                 Console.WriteLine("Incorrect input, defaulting to " + defaultValue + " " + inputName + "!");
             }
@@ -144,35 +153,42 @@ namespace GameOfLife
         /// <param name="cellCount">Number of alive cells in all simulations</param>
         public void PrintSimulationMenu(int liveGames, int startingGames, int cellCount)
         {
-            Console.Clear();
-            Console.WriteLine(
+            StringBuilder print = new StringBuilder();
+
+            print.Append(
                 "Total live games: " + liveGames + "/" + startingGames +
                 ", total alive cells: " + cellCount +
                 "; press SPACE to pause, press ESC to stop\n");
 
             if (IsPaused)
             {
-                PrintPause();
+                print.Append(PrintPause());
             }
+
+            Console.Clear();
+            Console.Write(print);
         }
 
         /// <summary>
         /// Prints simulation representation to Console
         /// </summary>
         /// <param name="simulation">Simulation formatted as a StringBuilder</param>
-        public void PrintSimulation(Simulation simulation)
+        public void PrintSimulation(Simulation simulation, int index)
         {
+            StringBuilder print = new StringBuilder();
+
             //First line is information about simulation properties
-            Console.Write("Current iteration: " + simulation.IterationCount +
+            print.Append("Simulation index: " + index +
+                ";Current iteration: " + simulation.IterationCount +
                 "; Count of live cells: " + simulation.CellCount +
                 "; Status: ");
             if (simulation.IsActive)
             {
-                Console.WriteLine(" ALIVE");
+                print.Append(" ALIVE\n");
             }
             else
             {
-                Console.WriteLine(" DEAD");
+                print.Append(" DEAD\n");
             }
 
             //Next lines in string are a representation of the simulation where '+' are alive cells
@@ -182,24 +198,27 @@ namespace GameOfLife
                 {
                     if (simulation.Grid[row][col])
                     {
-                        Console.Write('+');
+                        print.Append('+');
                     }
                     else
                     {
-                        Console.Write(' ');
+                        print.Append(' ');
                     }
                 }
-                Console.Write('\n');
+                print.Append('\n');
             }
+
+            Console.Write(print);
         }
 
         /// <summary>
-        /// Prints reminder that game is paused to Console
+        /// Returns string of message that game is paused.
         /// </summary>
-        private void PrintPause()
+        /// <returns>Message that game is paused</returns>
+        private string PrintPause()
         {
-            Console.WriteLine("Game is paused!");
-            Console.WriteLine("If you wish to change which simulations are being rendered, press ENTER!\n");
+            return "Game is paused!\n" +
+                "If you wish to change which simulations are being rendered, press ENTER!\n";
         }
 
         /// <summary>

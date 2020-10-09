@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Reflection.PortableExecutable;
-using System.Text;
-using System.Text.Json;
 
 namespace GameOfLife
 {
@@ -67,6 +64,9 @@ namespace GameOfLife
             RandomizeGrid();
         }
 
+        /// <summary>
+        /// Initialises simulation
+        /// </summary>
         private void Initialise()
         {
             //Initialises grid of the simulation
@@ -77,6 +77,9 @@ namespace GameOfLife
             }
         }
 
+        /// <summary>
+        /// Randomizes simulation's grid
+        /// </summary>
         private void RandomizeGrid()
         {
             //For each cell in the grid that is not on the border this will assign
@@ -105,6 +108,7 @@ namespace GameOfLife
         public void NextIteration()
         {
             bool[][] nextGrid = new bool[Rows][];
+
             for (int i = 0; i<Rows; i++)
             {
                 nextGrid[i] = new bool[Columns];
@@ -115,6 +119,7 @@ namespace GameOfLife
                 for (int y = 1; y < Columns - 1; y++)
                 {
                     nextGrid[x][y] = DoCellAction(x, y);
+                    CompareCellStates(Grid[x][y], nextGrid[x][y]);
                 }
             }
 
@@ -122,9 +127,17 @@ namespace GameOfLife
             IterationCount++;
         }
 
+        /// <summary>
+        /// Counts how many cells are alive around cell at given coordinates
+        /// </summary>
+        /// <param name="x">Cell's x coordinate</param>
+        /// <param name="y">Cell's x coordinate</param>
+        /// <returns>Count of alive cells around given cell</returns>
         private int CheckNeighborCount(int x, int y)
         {
-            int neighborsCount = -1;
+            int neighborsCount = 0;
+
+            //Check how many alive neighbours cell has
             for (int i = -1; i < 2; i++)
             {
                 for (int j = -1; j < 2; j++)
@@ -135,40 +148,56 @@ namespace GameOfLife
                     }
                 }
             }
+
+            //Take away 1 if cell is alive and counted itself
+            if (Grid[x][y])
+            {
+                neighborsCount--;
+            }
+
             return neighborsCount;
         }
 
+        /// <summary>
+        /// Checks given cell's neighbour count to determine if cell will be alive or dead
+        /// </summary>
+        /// <param name="x">Cell's x coordinate</param>
+        /// <param name="y">Cell's y coordinate</param>
+        /// <returns>Cell's new condition</returns>
         private bool DoCellAction(int x, int y)
         {
             //Find count of neigbhors for current cell
             int neighborsCount = CheckNeighborCount(x, y);
 
-            //Checks if cell is alive
-            if (Grid[x][y])
+            //Returns true or false depending on neighbour count
+            if (neighborsCount == 3)
             {
-                //Checks alive cell if it is underpopulated or overpopulated, kills it if it is
-                if (neighborsCount < 2 || neighborsCount > 3)
-                {
-                    CellCount--;
-                    return false;
-                }
-                else
-                {
-                    return true;
-                }
+                return true;
+            }
+            else if (neighborsCount == 2)
+            {
+                return Grid[x][y];
             }
             else
             {
-                //Checks dead cell if it can be reproduced, does so if it can
-                if (neighborsCount > 2)
-                {
-                    CellCount++;
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Compares initial and new state of cell to determine if and how to change total cell count in simulation
+        /// </summary>
+        /// <param name="initialState">Initial state of cell</param>
+        /// <param name="newState">New state of cell</param>
+        private void CompareCellStates(bool initialState, bool newState)
+        {
+            if (initialState && !newState)
+            {
+                CellCount--;
+            }
+            else if (!initialState && newState)
+            {
+                CellCount++;
             }
         }
     }

@@ -1,8 +1,15 @@
 ﻿namespace GameOfLife
 {
-    class Program
+    /// <summary>
+    /// Startup and restart class for Game of Life
+    /// </summary>
+    public class Program
     {
-        static void Main(string[] args)
+        /// <summary>
+        /// Startup method for the Game of Life
+        /// </summary>
+        /// <param name="args"></param>
+        public static void Main(string[] args)
         {
             bool restart;
             do
