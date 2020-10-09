@@ -64,7 +64,7 @@ namespace GameOfLife
         /// </summary>
         /// <param name="inputName">Name of input asked</param>
         /// <param name="defaultValue">Default value of input that is to be used in case of a failed parse or input under 1</param>
-        /// <returns>Value obtained from user</returns>
+        /// <returns>Value obtained from user or default value</returns>
         private int Input(string inputName, int defaultValue)
         {
             int value;
