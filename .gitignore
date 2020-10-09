@@ -3,10 +3,11 @@
 ##
 ## Get latest from https://github.com/github/gitignore/blob/master/VisualStudio.gitignore
 
-.vs/
-game_of_life/.vs/game_of_life
-game_of_life/game_of_life/bin/Debug/netcoreapp3.1
-game_of_life/game_of_life/obj
+**/.vs/
+**/bin/
+**/obj/
+**/.vs/game_of_life/
+**/bin/Debug/netcoreapp3.1/
 
 # User-specific files
 *.rsuser
