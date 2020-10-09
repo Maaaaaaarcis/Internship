@@ -67,11 +67,12 @@ namespace GameOfLife
         /// <returns>Value obtained from user</returns>
         private int Input(string inputName, int defaultValue)
         {
-            int value = defaultValue;
-            Console.WriteLine("Please enter the amount of " + inputName + "!");
+            int value;
+            Console.WriteLine("\nPlease enter the amount of " + inputName + "!");
             if (!Int32.TryParse(Console.ReadLine(), out value) || value < 1)
             {
                 Console.WriteLine("Incorrect input, defaulting to " + defaultValue + " " + inputName + "!");
+                value = defaultValue;
             }
             return value;
         }
@@ -94,35 +95,41 @@ namespace GameOfLife
 
                 //Read render list from input string
                 renderList = new List<int>();
-                int renderIndex;
-                do
+                string value = "";
+                int enteredNumber;
+                for (int i = 0; i < input.Length; i++)
                 {
-                    renderIndex = -1;
-                    if (Int32.TryParse(input.Substring(0, input.IndexOf(',')), out renderIndex)
-                        && renderIndex > -1
-                        && renderIndex < simulationCount)
+                    if (input[i] == ',' && value != "")
                     {
-                        renderList.Add(renderIndex);
+                        enteredNumber = Int32.Parse(value);
+                        if (enteredNumber < simulationCount)
+                        {
+                            renderList.Add(Int32.Parse(value));
+                        }
+                        value = "";
                     }
+                    else
+                    {
+                        if (Int32.TryParse(input[i] + "", out _))
+                        {
+                            value += input[i];
+                        }
+                    }
+                }
 
-                    input = input.Substring(input.IndexOf(',') + 1);
-
-                    if (renderList.Count > 7 || input.IndexOf(',') == -1)
+                if (renderList.Count != 0)
+                {
+                    //Ask user if render list is correct
+                    Console.WriteLine("Program will now render these simulations:");
+                    foreach (var item in renderList)
+                    {
+                        Console.Write(item + "  ");
+                    }
+                    Console.WriteLine("\nEnter \"y\" to continue, or enter anything else to go back and change inputs!");
+                    if (Console.ReadKey(true).KeyChar == 'y')
                     {
                         break;
                     }
-                } while (true);
-
-                //Ask user if render list is correct
-                Console.WriteLine("Program will now render these simulations:");
-                foreach (var item in renderList)
-                {
-                    Console.Write(item + "  ");
-                }
-                Console.WriteLine("\nEnter \"y\" to continue, or enter anything else to go back and change inputs!");
-                if (Console.ReadKey(true).KeyChar == 'y')
-                {
-                    break;
                 }
             } while (true);
 
