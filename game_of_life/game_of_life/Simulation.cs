@@ -67,7 +67,7 @@ namespace GameOfLife
         /// <summary>
         /// Initialises simulation
         /// </summary>
-        private void Initialise()
+        public void Initialise()
         {
             //Initialises grid of the simulation
             Grid = new bool[Rows][];

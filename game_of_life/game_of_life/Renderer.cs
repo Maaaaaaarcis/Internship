@@ -82,9 +82,10 @@ namespace GameOfLife
         /// </summary>
         /// <param name="simulationCount">Number of simulations in play</param>
         /// <returns>Returns new render list</returns>
-        public int[] AskRenderList(int simulationCount)
+        public List<int> AskRenderList(int simulationCount)
         {
             List<int> renderList;
+
             do
             {
                 //Ask user to input list of renderable simulations
@@ -93,29 +94,7 @@ namespace GameOfLife
                 string input = Console.ReadLine();
                 input += ',';
 
-                //Read render list from input string
-                renderList = new List<int>();
-                string value = "";
-                int enteredNumber;
-                for (int i = 0; i < input.Length; i++)
-                {
-                    if (input[i] == ',' && value != "")
-                    {
-                        enteredNumber = Int32.Parse(value);
-                        if (enteredNumber < simulationCount)
-                        {
-                            renderList.Add(Int32.Parse(value));
-                        }
-                        value = "";
-                    }
-                    else
-                    {
-                        if (Int32.TryParse(input[i] + "", out _))
-                        {
-                            value += input[i];
-                        }
-                    }
-                }
+                renderList = ConvertStringToList(input, simulationCount);
 
                 if (renderList.Count != 0)
                 {
@@ -133,7 +112,45 @@ namespace GameOfLife
                 }
             } while (true);
 
-            return renderList.ToArray();
+            return renderList;
+        }
+
+        /// <summary>
+        /// Formats entered string into an int list
+        /// </summary>
+        /// <param name="input">Input string</param>
+        /// <param name="simulationCount">Number of simulations, numbers above this will be ignored</param>
+        /// <returns>List of integers in string</returns>
+        private List<int> ConvertStringToList(string input, int simulationCount)
+        {
+            List<int> renderList = new List<int>();
+            int value = 0;
+
+            for (int i = 0; i < input.Length; i++)
+            {
+                if (input[i] == ',' && value != 0)
+                {
+                    if (value < simulationCount && !renderList.Contains(value))
+                    {
+                        renderList.Add(value);
+                    }
+                    value = 0;
+                }
+                else
+                {
+                    if (Int32.TryParse(input[i] + "", out int number))
+                    {
+                        value = value * 10 + number;
+                    }
+                }
+
+                if (renderList.Count > 7)
+                {
+                    break;
+                }
+            }
+
+            return renderList;
         }
 
         /// <summary>

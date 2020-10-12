@@ -1,21 +1,22 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Timers;
 
 namespace GameOfLife
 {
-    /// <summary>
+    // <summary>
     /// Contains logic for the game to run
     /// </summary>
     public class Game
     {
-        private int SimulationCount;
-        private Simulation[] Simulations;
-        private int LiveGames;
-        private int TotalAliveCells;
+        private int simulationCount;
+        private Simulation[] simulations;
+        private int liveGames;
+        private int totalAliveCells;
         private Timer timer;
-        private Renderer Render;
-        private int[] RenderList;
-        private FileHandler FileHandler;
+        private Renderer render;
+        private List<int> renderList;
+        private FileHandler fileHandler;
 
         /// <summary>
         /// Contains logic for the game to run
@@ -26,10 +27,10 @@ namespace GameOfLife
             timer.Elapsed += AdvanceIteration;
             timer.AutoReset = true;
             timer.Enabled = false;
-            LiveGames = 0;
-            TotalAliveCells = 0;
-            Render = new Renderer();
-            FileHandler = new FileHandler();
+            liveGames = 0;
+            totalAliveCells = 0;
+            render = new Renderer();
+            fileHandler = new FileHandler();
         }
 
         /// <summary>
@@ -41,14 +42,14 @@ namespace GameOfLife
             Initialise();
             DoLoop();
 
-            string fileName = Render.AskSave();
+            string fileName = render.AskSave();
             if (fileName != null)
             {
-                FileHandler.SetFileName(fileName);
-                FileHandler.Save(Simulations);
+                fileHandler.SetFileName(fileName);
+                fileHandler.Save(simulations);
             }
 
-            return Render.AskExit();
+            return render.AskExit();
         }
 
         /// <summary>
@@ -56,31 +57,31 @@ namespace GameOfLife
         /// </summary>
         private void Initialise()
         {
-            Render.PrintStartMessage();
+            render.PrintStartMessage();
 
-            string loadedFile = Render.AskLoad();
+            string loadedFile = render.AskLoad();
             if (loadedFile != null)
             {
-                FileHandler.SetFileName(loadedFile);
-                Simulations = FileHandler.Load();
-                InitialiseSimulations(Simulations);
-                RenderList = Render.AskRenderList(Simulations.Length);
+                fileHandler.SetFileName(loadedFile);
+                simulations = fileHandler.Load();
+                InitialiseSimulations(simulations);
+                renderList = render.AskRenderList(simulations.Length);
             }
             else
             {
                 int rows, cols;
-                Render.AskSimulationInitialisation(out rows, out cols, out SimulationCount);
+                render.AskSimulationInitialisation(out rows, out cols, out simulationCount);
 
                 //Adds 2 to rows and cols since borders can't be used
                 rows += 2;
                 cols += 2;
 
-                RenderList = Render.AskRenderList(SimulationCount);
+                renderList = render.AskRenderList(simulationCount);
 
                 InitialiseSimulations(rows, cols);
             }
 
-            LiveGames = SimulationCount;
+            liveGames = simulationCount;
         }
 
         /// <summary>
@@ -91,11 +92,11 @@ namespace GameOfLife
         private void InitialiseSimulations(int rows, int cols)
         {
             //Initialises simulations with its constructor, counts total cells
-            Simulations = new Simulation[SimulationCount];
-            for (int i = 0; i < SimulationCount; i++)
+            simulations = new Simulation[simulationCount];
+            for (int i = 0; i < simulationCount; i++)
             {
-                Simulations[i] = new Simulation(rows, cols);
-                TotalAliveCells += Simulations[i].CellCount;
+                simulations[i] = new Simulation(rows, cols);
+                totalAliveCells += simulations[i].CellCount;
             }
         }
 
@@ -105,10 +106,10 @@ namespace GameOfLife
         /// <param name="simulations">Simulations from file that game will be initialised with</param>
         private void InitialiseSimulations(Simulation[] simulations)
         {
-            SimulationCount = simulations.Length;
+            simulationCount = simulations.Length;
             foreach (Simulation simulation in simulations)
             {
-                TotalAliveCells += simulation.CellCount;
+                totalAliveCells += simulation.CellCount;
             }
         }
 
@@ -123,10 +124,10 @@ namespace GameOfLife
 
             while (true)
             {
-                switch (Render.CheckKeyPress())
+                switch (render.CheckKeyPress())
                 {
                     case 32:
-                        Render.IsPaused = timer.Enabled;
+                        render.IsPaused = timer.Enabled;
                         timer.Enabled = !timer.Enabled;
                         if (!timer.Enabled)
                         {
@@ -136,14 +137,14 @@ namespace GameOfLife
                     case 13:
                         if (!timer.Enabled)
                         {
-                            RenderList = Render.AskRenderList(SimulationCount);
+                            renderList = render.AskRenderList(simulationCount);
                             PrintSimulations();
                         }
                         break;
                     case 27:
                         timer.Stop();
-                        Render.IsPaused = false;
-                        Render.PrintSimulationMenu(LiveGames, SimulationCount, TotalAliveCells);
+                        render.IsPaused = false;
+                        render.PrintSimulationMenu(liveGames, simulationCount, totalAliveCells);
                         return;
                     default:
                         break;
@@ -159,19 +160,20 @@ namespace GameOfLife
         private void AdvanceIteration(Object source, ElapsedEventArgs e)
         {
             bool[][] oldGrid;
-            foreach (var simulation in Simulations)
+            foreach (var simulation in simulations)
             {
                 if (simulation.IsActive)
                 {
-                    LiveGames--;
-                    TotalAliveCells -= simulation.CellCount;
+                    liveGames--;
+                    totalAliveCells -= simulation.CellCount;
                     oldGrid = simulation.Grid;
                     
                     simulation.NextIteration();
-                    TotalAliveCells += simulation.CellCount;
+                    totalAliveCells += simulation.CellCount;
+
                     if (simulation.CellCount > 0 || !CompareGrids(oldGrid, simulation.Grid))
                     {
-                        LiveGames++;
+                        liveGames++;
                     }
                     else
                     {
@@ -210,10 +212,10 @@ namespace GameOfLife
         /// </summary>
         private void PrintSimulations()
         {
-            Render.PrintSimulationMenu(LiveGames, SimulationCount ,TotalAliveCells);
-            for (int i = 0; i < RenderList.Length; i++)
+            render.PrintSimulationMenu(liveGames, simulationCount ,totalAliveCells);
+            for (int i = 0; i < renderList.Count; i++)
             {
-                Render.PrintSimulation(Simulations[RenderList[i]], RenderList[i]);
+                render.PrintSimulation(simulations[renderList[i]], renderList[i]);
             }
         }
     }
