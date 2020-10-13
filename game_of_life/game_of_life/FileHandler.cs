@@ -3,9 +3,19 @@
 namespace GameOfLife
 {
     /// <summary>
+    /// File handler interface to be mocked in testing
+    /// </summary>
+    public interface IFileHandler
+    {
+        void SetFileName(string fileName);
+        void Save(Simulation[] simulations);
+        Simulation[] Load();
+    }
+
+    /// <summary>
     /// Handles saving to and loading from files for the game
     /// </summary>
-    public class FileHandler
+    public class FileHandler : IFileHandler
     {
         private string FileName;
 
