@@ -74,17 +74,4 @@ namespace XUnitTests
             fileSystemMock.Verify(x => x.WriteAllText(It.IsAny<string>(), It.IsAny<string>()));
         }
     }
-
-    class TestableFileSystem : IFileSystem
-    {
-        public string ReadAllText(string filePath)
-        {
-            return "[{\"IterationCount\":1,\"CellCount\":0,\"Rows\":10,\"Columns\":10,\"Grid\":[[false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false]],\"isActive\":true},{\"IterationCount\":1,\"CellCount\":0,\"Rows\":10,\"Columns\":10,\"Grid\":[[false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false]],\"isActive\":true}]";
-        }
-
-        public void WriteAllText(string filePath, string textToWrite)
-        {
-            
-        }
-    }
 }
