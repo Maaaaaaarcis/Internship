@@ -31,13 +31,14 @@ namespace GameOfLife
     public class FileHandler : IFileHandler
     {
         private string FileName;
+        private readonly IFileSystem fileSystem;
 
         /// <summary>
         /// Handles saving to and loading from a file for the game
         /// </summary>
         public FileHandler()
         {
-
+            fileSystem = new FileSystem();
         }
 
         /// <summary>
@@ -47,6 +48,18 @@ namespace GameOfLife
         public FileHandler(string fileName)
         {
             SetFileName(fileName);
+            fileSystem = new FileSystem();
+        }
+
+        /// <summary>
+        /// Handles saving to and loading from a file for the game
+        /// </summary>
+        /// <param name="fileName">Name of the file to be used</param>
+        /// <param name="fileSystem">File system to be used</param>
+        public FileHandler(string fileName, IFileSystem fileSystem)
+        {
+            SetFileName(fileName);
+            this.fileSystem = fileSystem;
         }
 
         /// <summary>
@@ -64,7 +77,7 @@ namespace GameOfLife
         /// <param name="simulations">Array of simulations to save</param>
         public void Save(Simulation[] simulations)
         {
-            System.IO.File.WriteAllText(FileName, JsonSerializer.Serialize(simulations));
+            fileSystem.WriteAllText(FileName, JsonSerializer.Serialize(simulations));
         }
 
         /// <summary>
@@ -72,7 +85,7 @@ namespace GameOfLife
         /// </summary>
         public Simulation[] Load()
         {
-            return JsonSerializer.Deserialize<Simulation[]>(System.IO.File.ReadAllText(FileName));
+            return JsonSerializer.Deserialize<Simulation[]>(fileSystem.ReadAllText(FileName));
         }
     }
 }

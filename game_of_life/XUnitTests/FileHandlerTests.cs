@@ -6,8 +6,7 @@ namespace XUnitTests
 {
     public class FileHandlerTests
     {
-        private Simulation[] testSimulations;
-        private readonly Mock<IFileHandler> fileHandlerMock = new Mock<IFileHandler>();
+        private FileHandler testFileHandler;
 
         public FileHandlerTests()
         {
@@ -18,30 +17,35 @@ namespace XUnitTests
         public void TestLoad()
         {
             // Arrange
+            var fileSystem = new TestableFileSystem();
+            testFileHandler = new FileHandler("", fileSystem);
+
             bool[][] emptyGrid = new bool[10][];
             for (int i = 0; i < 10; i++)
-            {
                 emptyGrid[i] = new bool[10];
-            }
-
-            fileHandlerMock.Setup(x => x.Load()).Returns(new Simulation[]
-            {
-                new Simulation
-                {
-                    IterationCount = 1,
-                    CellCount = 0,
-                    Rows = 10,
-                    Columns = 10,
-                    IsActive = true,
-                    Grid = emptyGrid
-                }
-            });
 
             // Act
-            testSimulations = fileHandlerMock.Object.Load();
+            Simulation[] simulations = testFileHandler.Load();
 
             // Assert
-            Assert.Equal(emptyGrid, testSimulations[0].Grid);
+            Assert.Equal(2, simulations.Length);
+            foreach (var simulation in simulations)
+            {
+                Assert.Equal(emptyGrid, simulation.Grid);
+            }
+        }
+    }
+
+    class TestableFileSystem : IFileSystem
+    {
+        public string ReadAllText(string filePath)
+        {
+            return "[{\"IterationCount\":1,\"CellCount\":0,\"Rows\":10,\"Columns\":10,\"Grid\":[[false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false]],\"isActive\":true},{\"IterationCount\":1,\"CellCount\":0,\"Rows\":10,\"Columns\":10,\"Grid\":[[false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false]],\"isActive\":true}]";
+        }
+
+        public void WriteAllText(string filePath, string textToWrite)
+        {
+            throw new System.NotImplementedException();
         }
     }
 }

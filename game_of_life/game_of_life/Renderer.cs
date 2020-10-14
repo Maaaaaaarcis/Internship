@@ -128,7 +128,7 @@ namespace GameOfLife
 
             for (int i = 0; i < input.Length; i++)
             {
-                if (input[i] == ',' && value != 0)
+                if (input[i] == ',')
                 {
                     if (value < simulationCount && !renderList.Contains(value))
                     {
