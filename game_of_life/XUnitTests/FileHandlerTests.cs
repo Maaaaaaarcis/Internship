@@ -7,6 +7,7 @@ namespace XUnitTests
     public class FileHandlerTests
     {
         private FileHandler testFileHandler;
+        private const string jsonString = "[{\"IterationCount\":1,\"CellCount\":0,\"Rows\":10,\"Columns\":10,\"Grid\":[[false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false]],\"isActive\":true},{\"IterationCount\":1,\"CellCount\":0,\"Rows\":10,\"Columns\":10,\"Grid\":[[false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false]],\"isActive\":true}]";
 
         public FileHandlerTests()
         {
@@ -17,8 +18,9 @@ namespace XUnitTests
         public void TestLoad()
         {
             // Arrange
-            var fileSystem = new TestableFileSystem();
-            testFileHandler = new FileHandler("", fileSystem);
+            var fileSystem = new Mock<IFileSystem>();
+            fileSystem.Setup(x => x.ReadAllText(It.IsAny<string>())).Returns(jsonString);
+            testFileHandler = new FileHandler("", fileSystem.Object);
 
             bool[][] emptyGrid = new bool[10][];
             for (int i = 0; i < 10; i++)
@@ -34,6 +36,43 @@ namespace XUnitTests
                 Assert.Equal(emptyGrid, simulation.Grid);
             }
         }
+
+        [Fact]
+        public void TestSave()
+        {
+            // Arrange
+            var fileSystemMock = new Mock<IFileSystem>();
+            testFileHandler = new FileHandler("", fileSystemMock.Object);
+            Simulation[] simulations = new Simulation[]
+            {
+                new Simulation()
+                {
+                    IterationCount = 1,
+                    CellCount = 0,
+                    Rows = 10,
+                    Columns = 10,
+                    IsActive = true
+                },
+                new Simulation()
+                {
+                    IterationCount = 1,
+                    CellCount = 0,
+                    Rows = 10,
+                    Columns = 10,
+                    IsActive = true
+                }
+            };
+            foreach(var simulation in simulations)
+            {
+                simulation.Initialise();
+            }
+
+            // Act
+            testFileHandler.Save(simulations);
+
+            // Assert
+            fileSystemMock.Verify(x => x.WriteAllText(It.IsAny<string>(), It.IsAny<string>()));
+        }
     }
 
     class TestableFileSystem : IFileSystem
@@ -45,7 +84,7 @@ namespace XUnitTests
 
         public void WriteAllText(string filePath, string textToWrite)
         {
-            throw new System.NotImplementedException();
+            
         }
     }
 }
