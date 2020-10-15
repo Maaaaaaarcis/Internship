@@ -1,6 +1,7 @@
 ﻿using GameOfLife;
 using Xunit;
 using Moq;
+using System.Runtime.InteropServices.ComTypes;
 
 namespace XUnitTests
 {
@@ -8,41 +9,41 @@ namespace XUnitTests
     {
         private FileHandler testFileHandler;
         private const string jsonString = "[{\"IterationCount\":1,\"CellCount\":0,\"Rows\":10,\"Columns\":10,\"Grid\":[[false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false]],\"isActive\":true},{\"IterationCount\":1,\"CellCount\":0,\"Rows\":10,\"Columns\":10,\"Grid\":[[false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false]],\"isActive\":true}]";
+        private Mock<IFileSystem> fileSystemMock = new Mock<IFileSystem>();
 
         public FileHandlerTests()
         {
-
+            testFileHandler = new FileHandler("", fileSystemMock.Object);
         }
 
         [Fact]
-        public void TestLoad()
+        public void Load_Should_ReturnSimulationArray_When_SerialisedSimulationArrayIsPassed()
         {
             // Arrange
-            var fileSystem = new Mock<IFileSystem>();
-            fileSystem.Setup(x => x.ReadAllText(It.IsAny<string>())).Returns(jsonString);
-            testFileHandler = new FileHandler("", fileSystem.Object);
-
-            bool[][] emptyGrid = new bool[10][];
-            for (int i = 0; i < 10; i++)
-                emptyGrid[i] = new bool[10];
-
+            fileSystemMock.Setup(x => x.ReadAllText(It.IsAny<string>())).Returns(jsonString);
+            
             // Act
             Simulation[] simulations = testFileHandler.Load();
 
             // Assert
-            Assert.Equal(2, simulations.Length);
-            foreach (var simulation in simulations)
-            {
-                Assert.Equal(emptyGrid, simulation.Grid);
-            }
+            Assert.NotNull(simulations);
         }
 
         [Fact]
-        public void TestSave()
+        public void Save_Should_PassSerialisedSimulations_When_SimulationArrayIsPassed()
         {
             // Arrange
-            var fileSystemMock = new Mock<IFileSystem>();
-            testFileHandler = new FileHandler("", fileSystemMock.Object);
+            Simulation[] simulations = InitialiseTestSimulations();
+
+            // Act
+            testFileHandler.Save(simulations);
+
+            // Assert
+            fileSystemMock.Verify(x => x.WriteAllText(It.IsAny<string>(), It.IsAny<string>()));
+        }
+
+        private Simulation[] InitialiseTestSimulations()
+        {
             Simulation[] simulations = new Simulation[]
             {
                 new Simulation()
@@ -62,16 +63,13 @@ namespace XUnitTests
                     IsActive = true
                 }
             };
-            foreach(var simulation in simulations)
+
+            foreach (var simulation in simulations)
             {
                 simulation.Initialise();
             }
 
-            // Act
-            testFileHandler.Save(simulations);
-
-            // Assert
-            fileSystemMock.Verify(x => x.WriteAllText(It.IsAny<string>(), It.IsAny<string>()));
+            return simulations;
         }
     }
 }

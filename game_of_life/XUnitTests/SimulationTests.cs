@@ -5,7 +5,7 @@ namespace XUnitTests
 {
     public class SimulationTests
     {
-        private readonly Simulation testingSimulation;
+        private Simulation testingSimulation;
 
         public SimulationTests()
         {
@@ -40,7 +40,22 @@ namespace XUnitTests
             new int[] { 3, 2 },
             new int[] { 3, 3 }
             )] // Toad
-        public void TestSimulationNextIteration(int period, params int[][] aliveCellCoords)
+        public void NextIteration_Should_RepeatItself_When_RepeatingFormationIsGiven(int period, params int[][] aliveCellCoords)
+        {
+            // Arrange
+            bool[][] initialGrid = InitialiseTestGrid(aliveCellCoords);
+
+            // Act
+            for (int x = 0; x < period; x++)
+            {
+                testingSimulation.NextIteration();
+            }
+
+            // Assert
+            Assert.Equal(initialGrid, testingSimulation.Grid);
+        }
+
+        private bool[][] InitialiseTestGrid(params int[][] aliveCellCoords)
         {
             bool[][] testGrid = testingSimulation.Grid;
 
@@ -51,14 +66,7 @@ namespace XUnitTests
 
             testingSimulation.Grid = testGrid;
 
-            for (int i = 0; i < 10; i++)
-            {
-                for (int x = 0; x < period; x++)
-                {
-                    testingSimulation.NextIteration();
-                }
-                Assert.Equal(testGrid, testingSimulation.Grid);
-            }
+            return testGrid;
         }
     }
 }
