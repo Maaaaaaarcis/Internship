@@ -123,8 +123,15 @@ namespace GameOfLife
                 }
             }
 
-            Grid = nextGrid;
-            IterationCount++;
+            if (CompareGrids(nextGrid, Grid))
+            {
+                IsActive = false;
+            }
+            else
+            {
+                Grid = nextGrid;
+                IterationCount++;
+            }
         }
 
         /// <summary>
@@ -199,6 +206,28 @@ namespace GameOfLife
             {
                 CellCount++;
             }
+        }
+
+        /// <summary>
+        /// Compares two grids to see if they are the same
+        /// </summary>
+        /// <param name="firstGrid">First grid to compare</param>
+        /// <param name="secondGrid">Second grid to compare</param>
+        /// <returns>True if grids are the same, false if not</returns>
+        private bool CompareGrids(bool[][] firstGrid, bool[][] secondGrid)
+        {
+            for (int x = 0; x < firstGrid.Length; x++)
+            {
+                for (int y = 0; y < firstGrid[x].Length; y++)
+                {
+                    if (firstGrid[x][y] != secondGrid[x][y])
+                    {
+                        return false;
+                    }
+                }
+            }
+
+            return true;
         }
     }
 }

@@ -159,52 +159,24 @@ namespace GameOfLife
         /// <param name="e">Event arguments passed from timer event</param>
         private void AdvanceIteration(Object source, ElapsedEventArgs e)
         {
-            bool[][] oldGrid;
             foreach (var simulation in simulations)
             {
                 if (simulation.IsActive)
                 {
                     liveGames--;
                     totalAliveCells -= simulation.CellCount;
-                    oldGrid = simulation.Grid;
                     
                     simulation.NextIteration();
                     totalAliveCells += simulation.CellCount;
 
-                    if (simulation.CellCount > 0 || !CompareGrids(oldGrid, simulation.Grid))
+                    if (simulation.IsActive)
                     {
                         liveGames++;
-                    }
-                    else
-                    {
-                        simulation.IsActive = false;
                     }
                 }
             }
 
             PrintSimulations();
-        }
-
-        /// <summary>
-        /// Compares two grids to see if they are the same
-        /// </summary>
-        /// <param name="firstGrid">A grid that is to be compared with</param>
-        /// <param name="secondGrid">A grid that is to be compared with</param>
-        /// <returns>True if they are the same, false if they are not</returns>
-        private bool CompareGrids(bool[][] firstGrid, bool[][] secondGrid)
-        {
-            for (int x = 0; x < firstGrid.Length; x++)
-            {
-                for (int y = 0; y < firstGrid[0].Length; y++)
-                {
-                    if (firstGrid[x][y] != secondGrid[x][y])
-                    {
-                        return false;
-                    }
-                }
-            }
-
-            return true;
         }
 
         /// <summary>
