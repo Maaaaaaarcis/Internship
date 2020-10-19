@@ -85,32 +85,32 @@ namespace Savanna
             switch (direction)
             {
                 case 0:
-                    Y++;
+                    X++;
                     break;
                 case 1:
-                    Y++;
                     X++;
+                    Y++;
                     break;
                 case 2:
-                    X++;
+                    Y++;
                     break;
                 case 3:
-                    X++;
-                    Y--;
+                    Y++;
+                    X--;
                     break;
                 case 4:
-                    Y--;
+                    X--;
                     break;
                 case 5:
-                    Y--;
                     X--;
+                    Y--;
                     break;
                 case 6:
-                    X--;
+                    Y--;
                     break;
                 case 7:
-                    X--;
-                    Y++;
+                    Y--;
+                    X++;
                     break;
             }
         }
@@ -198,6 +198,8 @@ namespace Savanna
                 angle = 360 + angle;
 
             int direction = (int)Math.Round(angle / 45);
+            if (direction == 8)
+                direction = 0;
 
             // Reverse direction if animal is not friendly
             if (!friendly)
