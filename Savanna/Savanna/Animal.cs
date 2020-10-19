@@ -63,8 +63,8 @@ namespace Savanna
         /// </summary>
         public void Spawn()
         {
-            X = rand.Next(100);
-            Y = rand.Next(100);
+            X = rand.Next(10);
+            Y = rand.Next(10);
         }
 
         /// <summary>

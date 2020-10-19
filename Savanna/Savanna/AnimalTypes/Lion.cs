@@ -5,7 +5,7 @@
         public Lion(Application owner) : base(owner)
         {
             IsPredator = true;
-            VisionRange = 7;
+            VisionRange = 10;
             SpecialActionCooldownReset = 10;
             SpecialActionCooldown = 0;
         }

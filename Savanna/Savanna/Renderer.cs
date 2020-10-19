@@ -7,22 +7,23 @@ namespace Savanna
     /// <summary>
     /// Handles rendering to screen
     /// </summary>
-    public static class Renderer
+    public class Renderer
     {
         /// <summary>
         /// Renders welcome message
         /// </summary>
-        public static void RenderWelcomeMessage()
+        public void RenderWelcomeMessage()
         {
             Console.WriteLine("Welcome to the \"Savanna\"!\nPress any button to start!");
             Console.ReadKey(false);
+            Console.Clear();
             Console.CursorVisible = false;
         }
 
         /// <summary>
         /// Renders exit message
         /// </summary>
-        public static void RenderExitMessage()
+        public void RenderExitMessage()
         {
             Console.WriteLine("Press any button to exit program!");
             Console.ReadKey();
@@ -32,7 +33,7 @@ namespace Savanna
         /// Checks to see what, if any, button is pressed by the user
         /// </summary>
         /// <returns>Integer representation of pressed key, or -1 if no key is pressed</returns>
-        public static int CheckKeyPress()
+        public int CheckKeyPress()
         {
             if (Console.KeyAvailable)
             {
@@ -48,44 +49,50 @@ namespace Savanna
         /// Renders field with animals
         /// </summary>
         /// <param name="animals">List of animals in play to be rendered</param>
-        public static void RenderField(List<Animal> animals)
+        /// <param name="index">Index of animal that camera is following</param>
+        public void RenderField(List<Animal> animals, int index)
         {
             StringBuilder output = new StringBuilder();
+            int visionRange = animals[index].VisionRange;
+            int animalX = animals[index].X;
+            int animalY = animals[index].Y;
+            bool a = false;
 
-            foreach (Animal animal in animals)
+            for (int x = -visionRange; x < visionRange; x++)
             {
-                output.Append(animal.Type + " => X: " + animal.X + ", Y: " + animal.Y + "\n");
+                for (int y = -visionRange; y < visionRange; y++)
+                {
+                    a = true;
+                    foreach (Animal animal in animals)
+                    {
+                        if (animal.X == animalX + x && animal.Y == animalY + y)
+                        {
+                            if (animal.IsPredator)
+                            {
+                                output.Append("L");
+                            }
+                            else
+                            {
+                                output.Append("A");
+                            }
+                            a = false;
+                            break;
+                        }
+                    }
+                    if (a)
+                    {
+                        output.Append(" ");
+                    }
+                }
+                if (x == 0)
+                {
+                    output.Append("  X: " + animals[index].X + ", Y: " + animals[index].Y);
+                }
+                output.Append("\n");
             }
 
             Console.Clear();
             Console.Write(output);
         }
-        //public static void RenderField(List<Animal> animals)
-        //{
-        //    char[,] field = new char[100, 100];
-
-        //    foreach(Animal animal in animals)
-        //    {
-        //        field[animal.X, animal.Y] = animal.Type;
-        //    }
-
-        //    StringBuilder output = new StringBuilder();
-        //    char compare = new char();
-
-        //    for (int x = 0; x < 100; x++)
-        //    {
-        //        for (int y = 0; y < 100; y++)
-        //        {
-        //            if (field[x, y] != compare)
-        //                output.Append(field[x, y]);
-        //            else
-        //                output.Append(' ');
-        //        }
-        //        output.Append("\n");
-        //    }
-
-        //    Console.Clear();
-        //    Console.Write(output);
-        //}
     }
 }

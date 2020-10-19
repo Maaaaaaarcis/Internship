@@ -14,7 +14,7 @@ namespace Savanna
         /// <summary>
         /// List of animals in play
         /// </summary>
-        public List<Animal> Animals;
+        public List<Animal> AnimalsInPlay;
 
         /// <summary>
         /// Timer that handles starting animal actions
@@ -27,11 +27,17 @@ namespace Savanna
         private bool HerbivoreMove;
 
         /// <summary>
+        /// Renderer that handles rendering to screen
+        /// </summary>
+        private Renderer renderer;
+
+        /// <summary>
         /// Contains logic to run the "Savanna" game
         /// </summary>
         public Application()
         {
-            Animals = new List<Animal>();
+            AnimalsInPlay = new List<Animal>();
+            renderer = new Renderer();
             HerbivoreMove = false;
             timer = new Timer(500);
             timer.Elapsed += DoTimerEvent;
@@ -42,9 +48,9 @@ namespace Savanna
         /// </summary>
         public void Start()
         {
-            Renderer.RenderWelcomeMessage();
+            renderer.RenderWelcomeMessage();
             Loop();
-            Renderer.RenderExitMessage();
+            renderer.RenderExitMessage();
         }
 
         /// <summary>
@@ -55,7 +61,7 @@ namespace Savanna
             timer.Enabled = true;
             while (true)
             {
-                switch (Renderer.CheckKeyPress())
+                switch (renderer.CheckKeyPress())
                 {
                     case 27:    // Escape key
                         timer.Stop();
@@ -65,6 +71,9 @@ namespace Savanna
                         break;
                     case 76:    // L key
                         GenerateAnimal('L');
+                        break;
+                    case 32:    // Spacebar
+                        timer.Enabled = !timer.Enabled;
                         break;
                 }
             }
@@ -79,15 +88,16 @@ namespace Savanna
         {
             HerbivoreMove = !HerbivoreMove;
 
-            foreach(Animal animal in Animals)
+            foreach(Animal animal in AnimalsInPlay)
             {
                 if ((!animal.IsPredator && HerbivoreMove) || animal.IsPredator)
                 {
-                    animal.Look(Animals.Where(x => x != animal).ToList());
+                    animal.Look(AnimalsInPlay.Where(x => x != animal).ToList());
                 }
             }
 
-            Renderer.RenderField(Animals);
+            if (AnimalsInPlay.Count != 0)
+                renderer.RenderField(AnimalsInPlay, 0);
         }
 
         /// <summary>
@@ -110,7 +120,7 @@ namespace Savanna
                     throw new ArgumentException();
             }
 
-            Animals.Add(animal);
+            AnimalsInPlay.Add(animal);
         }
 
         /// <summary>
@@ -123,11 +133,11 @@ namespace Savanna
         {
             int i = 0;
 
-            foreach (Antelope antelope in Animals)
+            foreach (Antelope antelope in AnimalsInPlay)
             {
                 if (antelope.X == x && antelope.Y == y)
                 {
-                    Animals.Remove(antelope);
+                    AnimalsInPlay.Remove(antelope);
                     i++;
                 }
             }

@@ -7,7 +7,7 @@ namespace Savanna
         public Antelope(Application owner) : base(owner)
         {
             IsPredator = false;
-            VisionRange = 10;
+            VisionRange = 5;
             SpecialActionCooldownReset = 7;
             SpecialActionCooldown = 0;
         }
