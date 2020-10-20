@@ -56,13 +56,13 @@ namespace Savanna
             int visionRange = animals[index].VisionRange;
             int animalX = animals[index].X;
             int animalY = animals[index].Y;
-            bool a = false;
+            bool animalSpotted = false;
 
-            for (int x = -visionRange; x < visionRange; x++)
+            for (int y = -visionRange; y < visionRange; y++)
             {
-                for (int y = -visionRange; y < visionRange; y++)
+                for (int x = -visionRange; x < visionRange; x++)
                 {
-                    a = true;
+                    animalSpotted = true;
                     foreach (Animal animal in animals)
                     {
                         if (animal.X == animalX + x && animal.Y == animalY + y)
@@ -75,16 +75,16 @@ namespace Savanna
                             {
                                 output.Append("A");
                             }
-                            a = false;
+                            animalSpotted = false;
                             break;
                         }
                     }
-                    if (a)
+                    if (animalSpotted)
                     {
                         output.Append(" ");
                     }
                 }
-                if (x == 0)
+                if (y == 0)
                 {
                     output.Append("  X: " + animals[index].X + ", Y: " + animals[index].Y);
                 }

@@ -22,7 +22,7 @@ namespace Savanna
         public Timer timer;
 
         /// <summary>
-        /// Bool for timer so that antelopes move every 2nd timer tick
+        /// Bool for timer so that herbivores move every 2nd timer tick
         /// </summary>
         private bool HerbivoreMove;
 
@@ -63,16 +63,16 @@ namespace Savanna
             {
                 switch (renderer.CheckKeyPress())
                 {
-                    case 27:    // Escape key
+                    case 27:    // Escape key - exit loop
                         timer.Stop();
                         return;
-                    case 65:    // A key
+                    case 65:    // A key - add antelope to field
                         GenerateAnimal('A');
                         break;
-                    case 76:    // L key
+                    case 76:    // L key - add lion to field
                         GenerateAnimal('L');
                         break;
-                    case 32:    // Spacebar
+                    case 32:    // Spacebar - pause
                         timer.Enabled = !timer.Enabled;
                         break;
                 }
@@ -133,12 +133,12 @@ namespace Savanna
         {
             int i = 0;
 
-            foreach (Antelope antelope in AnimalsInPlay)
+            foreach (Animal animal in AnimalsInPlay)
             {
-                if (antelope.X == x && antelope.Y == y)
+                if (animal.X == x && animal.Y == y && !animal.IsPredator)
                 {
-                    AnimalsInPlay.Remove(antelope);
                     i++;
+                    AnimalsInPlay.Remove(animal);
                 }
             }
 

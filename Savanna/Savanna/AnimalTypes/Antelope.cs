@@ -8,7 +8,7 @@ namespace Savanna
         {
             IsPredator = false;
             VisionRange = 5;
-            SpecialActionCooldownReset = 7;
+            SpecialActionCooldownReset = 15;
             SpecialActionCooldown = 0;
         }
 

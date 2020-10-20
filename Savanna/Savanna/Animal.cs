@@ -118,7 +118,7 @@ namespace Savanna
         /// <summary>
         /// Animal looks around to determine where to move
         /// </summary>
-        public void Look(List<Animal> animals)
+        public virtual void Look(List<Animal> animals)
         {
             double distanceToAnimal;
             double closestAnimal = VisionRange + 1;
@@ -202,7 +202,7 @@ namespace Savanna
                 direction = 0;
 
             // Reverse direction if animal is not friendly
-            if (!friendly)
+            if (!friendly && !IsPredator)
             {
                 if (X < 4)
                 {
