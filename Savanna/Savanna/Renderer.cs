@@ -53,33 +53,27 @@ namespace Savanna
         public void RenderField(List<Animal> animals, int index)
         {
             StringBuilder output = new StringBuilder();
+
             int visionRange = animals[index].VisionRange;
             int animalX = animals[index].X;
             int animalY = animals[index].Y;
-            bool animalSpotted = false;
+            bool noAnimalSpotted;
 
-            for (int y = -visionRange; y < visionRange; y++)
+            for (int y = -visionRange; y <= visionRange; y++)
             {
-                for (int x = -visionRange; x < visionRange; x++)
+                for (int x = -visionRange; x <= visionRange; x++)
                 {
-                    animalSpotted = true;
+                    noAnimalSpotted = true;
                     foreach (Animal animal in animals)
                     {
                         if (animal.X == animalX + x && animal.Y == animalY + y)
                         {
-                            if (animal.IsPredator)
-                            {
-                                output.Append("L");
-                            }
-                            else
-                            {
-                                output.Append("A");
-                            }
-                            animalSpotted = false;
+                            output.Append(animal.ReturnIcon());
+                            noAnimalSpotted = false;
                             break;
                         }
                     }
-                    if (animalSpotted)
+                    if (noAnimalSpotted)
                     {
                         output.Append(" ");
                     }

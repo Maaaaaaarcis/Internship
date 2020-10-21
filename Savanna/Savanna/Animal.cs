@@ -39,11 +39,6 @@ namespace Savanna
         public int SpecialActionCooldown { get; private protected set; }
 
         /// <summary>
-        /// Application that owns this animal
-        /// </summary>
-        private protected Application Owner;
-
-        /// <summary>
         /// Used to generate random actions for animal
         /// </summary>
         private protected Random rand;
@@ -51,11 +46,10 @@ namespace Savanna
         /// <summary>
         /// Abstract class of animal that needs to be implemented by the actual animal classes
         /// </summary>
-        public Animal(Application owner)
+        public Animal()
         {
             rand = new Random();
             Spawn();
-            Owner = owner;
         }
 
         /// <summary>
@@ -79,7 +73,7 @@ namespace Savanna
         /// <summary>
         /// Moves animal in a direction to flee or attack
         /// </summary>
-        /// <param name="direction">Direction as a clock with values 0-7, 0 being up</param>
+        /// <param name="direction">Direction as a clock with values 0-7, 0 being to the right, counterclockwise</param>
         public void Move(int direction)
         {
             switch (direction)
@@ -118,7 +112,8 @@ namespace Savanna
         /// <summary>
         /// Animal looks around to determine where to move
         /// </summary>
-        public virtual void Look(List<Animal> animals)
+        /// <param name="animals">List of animals that current animal can look at</param>
+        public virtual void Look(ref List<Animal> animals)
         {
             double distanceToAnimal;
             double closestAnimal = VisionRange + 1;
@@ -130,35 +125,40 @@ namespace Savanna
             // Look around to see any threats or friendly animals and decide preferred direction
             foreach (Animal animal in animals)
             {
-                // ((x1-x2)^2 + (y1-y2)^2) < d^2
-                distanceToAnimal = Math.Sqrt(((X - animal.X) * (X - animal.X)) + ((Y - animal.Y) * (Y - animal.Y)));
-                
-                if (distanceToAnimal < VisionRange)
+                if (animal != this)
                 {
-                    if (differentAnimalInSight)
+                    // ((x1-x2)^2 + (y1-y2)^2) < d^2
+                    distanceToAnimal = Math.Sqrt(((X - animal.X) * (X - animal.X)) + ((Y - animal.Y) * (Y - animal.Y)));
+
+                    if (distanceToAnimal < VisionRange)
                     {
-                        if (IsPredator != animal.IsPredator && distanceToAnimal < closestAnimal)
+                        if (differentAnimalInSight)
                         {
-                            closestAnimal = distanceToAnimal;
-                            closestAnimalX = animal.X;
-                            closestAnimalY = animal.Y;
-                        }
-                    }
-                    else
-                    {
-                        if (IsPredator != animal.IsPredator)
-                        {
-                            differentAnimalInSight = true;
-                            closestAnimal = distanceToAnimal;
-                            closestAnimalX = animal.X;
-                            closestAnimalY = animal.Y;
+                            if (IsPredator != animal.IsPredator && distanceToAnimal < closestAnimal)
+                            {
+                                closestAnimal = distanceToAnimal;
+                                closestAnimalX = animal.X;
+                                closestAnimalY = animal.Y;
+                            }
                         }
                         else
                         {
-                            if (distanceToAnimal < closestAnimal)
+                            if (IsPredator != animal.IsPredator)
                             {
-                                sameAnimalInSight = true;
+                                differentAnimalInSight = true;
                                 closestAnimal = distanceToAnimal;
+                                closestAnimalX = animal.X;
+                                closestAnimalY = animal.Y;
+                            }
+                            else
+                            {
+                                if (distanceToAnimal < closestAnimal)
+                                {
+                                    sameAnimalInSight = true;
+                                    closestAnimal = distanceToAnimal;
+                                    closestAnimalX = animal.X;
+                                    closestAnimalY = animal.Y;
+                                }
                             }
                         }
                     }
@@ -181,6 +181,12 @@ namespace Savanna
             {
                 Move();
             }
+
+            // Remove animal from list if it has exited locale
+            if (Math.Abs(X) > 99 || Math.Abs(Y) > 99)
+            {
+                animals.Remove(this);
+            }
         }
 
         /// <summary>
@@ -195,26 +201,44 @@ namespace Savanna
             // Calculate angle of animal and direction from angle
             double angle = Math.Atan2(relativeY, relativeX) * 180 / Math.PI;
             if (angle < 0)
+            {
                 angle = 360 + angle;
+            }
 
             int direction = (int)Math.Round(angle / 45);
             if (direction == 8)
+            {
                 direction = 0;
+            }
 
             // Reverse direction if animal is not friendly
             if (!friendly && !IsPredator)
             {
-                if (X < 4)
-                {
-                    direction += 4;
-                }
-                else
-                {
-                    direction -= 4;
-                }
+                direction = Math.Abs(direction - 8);
             }
 
             return direction;
+        }
+
+        /// <summary>
+        /// Checks if animal passed is next to current animal, removes it from list if it is eaten
+        /// </summary>
+        /// <param name="animal">Animal to check weather it's next to current animal</param>
+        /// <returns>True if animal is next to current animal, false if it is not</returns>
+        private protected bool CheckIfAnimalIsNear(Animal animal, int range)
+        {
+            for (int x = -range; x <= range; x++)
+            {
+                for (int y = -range; y <= range; y++)
+                {
+                    if (X + x == animal.X && Y + y == animal.Y)
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
         }
 
         /// <summary>
@@ -223,6 +247,15 @@ namespace Savanna
         /// <param name="relativeX">x coordinate of spotted animal</param>
         /// <param name="relativeY">y coordinate of spotted animal</param>
         /// <returns>True if animal did special action</returns>
-        public abstract bool DoSpecialAction(int relativeX, int relativeY);
+        public virtual bool DoSpecialAction(int relativeX, int relativeY)
+        {
+            return false;
+        }
+
+        /// <summary>
+        /// Returns icon for animal to be used in the renderer
+        /// </summary>
+        /// <returns>Icon of animal for renderer</returns>
+        public abstract string ReturnIcon();
     }
 }

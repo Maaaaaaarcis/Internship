@@ -1,7 +1,5 @@
 ﻿using Savanna.Animals;
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Timers;
 
 namespace Savanna
@@ -14,12 +12,12 @@ namespace Savanna
         /// <summary>
         /// List of animals in play
         /// </summary>
-        public List<Animal> AnimalsInPlay;
+        private List<Animal> AnimalsInPlay;
 
         /// <summary>
         /// Timer that handles starting animal actions
         /// </summary>
-        public Timer timer;
+        private Timer timer;
 
         /// <summary>
         /// Bool for timer so that herbivores move every 2nd timer tick
@@ -67,10 +65,12 @@ namespace Savanna
                         timer.Stop();
                         return;
                     case 65:    // A key - add antelope to field
-                        GenerateAnimal('A');
+                        //GenerateAnimal('A');
+                        AnimalsInPlay.Add(new Antelope());
                         break;
                     case 76:    // L key - add lion to field
-                        GenerateAnimal('L');
+                        //GenerateAnimal('L');
+                        AnimalsInPlay.Add(new Lion());
                         break;
                     case 32:    // Spacebar - pause
                         timer.Enabled = !timer.Enabled;
@@ -88,61 +88,29 @@ namespace Savanna
         {
             HerbivoreMove = !HerbivoreMove;
 
-            foreach(Animal animal in AnimalsInPlay)
+            for (int i = 0; i < AnimalsInPlay.Count; i++)
             {
-                if ((!animal.IsPredator && HerbivoreMove) || animal.IsPredator)
+                if ((!AnimalsInPlay[i].IsPredator && HerbivoreMove) || AnimalsInPlay[i].IsPredator)
                 {
-                    animal.Look(AnimalsInPlay.Where(x => x != animal).ToList());
+                    AnimalsInPlay[i].Look(ref AnimalsInPlay);
                 }
             }
 
             if (AnimalsInPlay.Count != 0)
+            {
                 renderer.RenderField(AnimalsInPlay, 0);
+            }
         }
 
-        /// <summary>
+        /*/// <summary>
         /// Generates a new animal on the field
         /// </summary>
         /// <param name="animalType">Type of animal to be generated</param>
-        private void GenerateAnimal(char animalType)
+        private void GenerateAnimal()
         {
-            Animal animal;
-
-            switch (animalType)
-            {
-                case 'A':
-                    animal = new Antelope(this);
-                    break;
-                case 'L':
-                    animal = new Lion(this);
-                    break;
-                default:
-                    throw new ArgumentException();
-            }
+            Animal animal = new Animal();
 
             AnimalsInPlay.Add(animal);
-        }
-
-        /// <summary>
-        /// Method for lions to eat antelope
-        /// </summary>
-        /// <param name="x">X coordinate of antelope</param>
-        /// <param name="y">Y coordinate of antelope</param>
-        /// <returns>Number of antelopes eaten on coordinates</returns>
-        public int EatAnimal(int x, int y)
-        {
-            int i = 0;
-
-            foreach (Animal animal in AnimalsInPlay)
-            {
-                if (animal.X == x && animal.Y == y && !animal.IsPredator)
-                {
-                    i++;
-                    AnimalsInPlay.Remove(animal);
-                }
-            }
-
-            return i;
-        }
+        }*/
     }
 }

@@ -1,10 +1,14 @@
-﻿using System;
-
-namespace Savanna
+﻿namespace Savanna
 {
+    /// <summary>
+    /// Animal that is not a predator. Special move is to dash 
+    /// </summary>
     public class Antelope : Animal
     {
-        public Antelope(Application owner) : base(owner)
+        /// <summary>
+        /// Animal that is not a predator. Special move is to dash 
+        /// </summary>
+        public Antelope() : base()
         {
             IsPredator = false;
             VisionRange = 5;
@@ -32,9 +36,20 @@ namespace Savanna
             else
             {
                 if (SpecialActionCooldown > 0)
+                {
                     SpecialActionCooldown--;
+                }
                 return false;
             }
+        }
+
+        /// <summary>
+        /// Returns icon for animal to be used in the renderer
+        /// </summary>
+        /// <returns>Icon of antelope for renderer: "A"</returns>
+        public override string ReturnIcon()
+        {
+            return "A";
         }
     }
 }

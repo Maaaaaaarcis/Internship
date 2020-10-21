@@ -2,9 +2,16 @@
 
 namespace Savanna
 {
-    class Program
+    /// <summary>
+    /// Entry class for game of "Savanna"
+    /// </summary>
+    public class Program
     {
-        static void Main(string[] args)
+        /// <summary>
+        /// Entry method for game of "Savanna"
+        /// </summary>
+        /// <param name="args"></param>
+        public static void Main(string[] args)
         {
             Application app = new Application();
             app.Start();
